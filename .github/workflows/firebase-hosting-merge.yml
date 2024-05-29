@@ -1,10 +1,9 @@
-# firebase-hosting-merge.yml
-
 name: Deploy to Firebase Hosting on merge
 on:
   push:
     branches:
       - main
+
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
@@ -12,26 +11,32 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Build and deploy admin-panel
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Build admin-panel
         run: |
           cd admin-panel
           npm ci
           npm run build
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PORTFOLIOTYPESCRIPT }}
-          channelId: live
-          projectId: portfoliotypescript
 
-      - name: Build and deploy user-interface
+      - name: Deploy admin-panel
+        run: |
+          cd admin-panel
+          firebase deploy --only hosting:admin-panel --token ${{ secrets.FIREBASE_TOKEN }}
+
+      - name: Build user-interface
         run: |
           cd user-interface
           npm ci
           npm run build
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PORTFOLIOTYPESCRIPT }}
-          channelId: live
-          projectId: portfoliotypescript
+
+      - name: Deploy user-interface
+        run: |
+          cd user-interface
+          firebase deploy --only hosting:user-interface --token ${{ secrets.FIREBASE_TOKEN }}
