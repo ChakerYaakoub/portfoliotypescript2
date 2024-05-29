@@ -19,11 +19,23 @@ jobs:
           cd admin-panel
           npm ci
           npm run build
-          firebase deploy --project admin-panel --token ${{ secrets.FIREBASE_TOKEN }}
+
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PORTFOLIOTYPESCRIPT }}
+          channelId: live
+          projectId: portfoliotypescript
 
       - name: Build and deploy user-interface
         run: |
           cd user-interface
           npm ci
           npm run build
-          firebase deploy --project user-interface --token ${{ secrets.FIREBASE_TOKEN }}
+
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PORTFOLIOTYPESCRIPT }}
+          channelId: live
+          projectId: portfoliotypescript
